@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Dot Produk Vektor</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS STYLING --- */
+        :root {
+            --bg-red: #ea361a; /* Warna merah sesuai referensi */
+            --text-white: #f5f5f5;
+            --text-black: #111;
+            --border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* Smooth scrolling untuk navigasi satu halaman */
+        html { scroll-behavior: smooth; }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-red); 
+            color: var(--text-white); 
+            line-height: 1.6; 
+            overflow-x: hidden;
+        }
+
+        /* Tipografi Serif untuk Judul */
+        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; font-weight: 400; }
+        
+        /* Navigasi Mengambang di Kanan Atas */
+        nav {
+            position: fixed;
+            top: 20px; right: 40px;
+            z-index: 100;
+        }
+        .nav-links { list-style: none; display: flex; gap: 30px; }
+        .nav-links li a { 
+            color: var(--text-white); 
+            text-decoration: none; 
+            font-size: 14px; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .nav-links li a:hover { opacity: 0.7; }
+
+        /* --- SECTION 1: HOME (SPLIT SCREEN) --- */
+        #home {
+            display: flex;
+            height: 100vh;
+            border-bottom: 1px solid var(--border-color);
+        }
+        /* Bagian Kiri: Gambar Penemu */
+        .hero-image {
+            flex: 1;
+            /* Menggunakan foto Josiah Willard Gibbs dari Wikipedia */
+            background: url('https://upload.wikimedia.org/wikipedia/commons/2/23/Josiah_Willard_Gibbs_-from_MMS-.jpg') center top/cover no-repeat;
+            border-right: 1px solid var(--border-color);
+            filter: contrast(1.1) grayscale(20%); /* Sedikit efek artistik */
+        }
+        /* Bagian Kanan: Teks & Sejarah */
+        .hero-text {
+            flex: 1;
+            padding: 80px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .hero-text h1 { font-size: 5rem; line-height: 1.1; margin-bottom: 20px; letter-spacing: -1px; }
+        .hero-text h1 i { font-style: italic; }
+        .hero-text .subtitle { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9; }
+        .hero-text .bio { 
+            font-size: 0.95rem; 
+            border-top: 1px solid var(--border-color); 
+            padding-top: 20px; 
+            max-width: 80%;
+        }
+
+        /* --- LAYOUT UMUM UNTUK SECTION LAINNYA --- */
+        .section-container {
+            padding: 100px 60px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .section-title { font-size: 3.5rem; margin-bottom: 40px; }
+
+        /* --- SECTION 2: CALCULATE --- */
+        .calc-wrapper {
+            display: flex;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+        .inputs { flex: 1; background: rgba(0,0,0,0.1); padding: 30px; border: 1px solid var(--border-color); }
+        .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .inputs label { font-size: 14px; letter-spacing: 1px; }
+        .inputs input, .inputs select { 
+            padding: 10px; 
+            background: transparent; 
+            border: 1px solid var(--border-color); 
+            color: white; 
+            font-family: 'Inter', sans-serif;
+        }
+        .inputs button { 
+            padding: 15px; 
+            background: var(--text-white); 
+            color: var(--bg-red); 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            letter-spacing: 1px; 
+            width: 100%;
+            margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+        }
+        .inputs button:hover { background: #111; color: white; }
+
+        /* Area Canvas */
+        .visualization { 
+            flex: 1.5; 
+            position: relative; 
+            border: 1px solid var(--border-color); 
+            background-color: #111; /* Latar kanvas gelap biar garis vektor menonjol */
+            display: flex; justify-content: center; align-items: center;
+        }
+        canvas { cursor: grab; }
+        canvas:active { cursor: grabbing; }
+        .canvas-controls { position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; gap: 5px; z-index: 10; }
+        .canvas-controls button { 
+            width: 35px; height: 35px; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border-color); cursor: pointer; font-size: 18px; 
+        }
+        .canvas-controls button:hover { background: white; color: black; }
+        .canvas-hint { position: absolute; bottom: 15px; left: 15px; color: rgba(255,255,255,0.5); font-size: 11px; z-index: 10; pointer-events: none; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* --- SECTION 3: HISTORY --- */
+        #history-container p { 
+            padding: 15px 0; 
+            border-bottom: 1px dashed var(--border-color); 
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+        }
+
+        /* --- SECTION 4: ABOUT US --- */
+        .about-content { max-width: 700px; font-size: 1.1rem; }
+        .about-content p { margin-bottom: 20px; }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#calculate">Calculate</a></li>
+            <li><a href="#history">History</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+    </nav>
+
+    <section id="home">
+        <div class="hero-image"></div>
+        <div class="hero-text">
+            <p style="letter-spacing: 3px; font-weight: 600; font-size: 12px; margin-bottom: 10px;">SEJARAH MATEMATIKA</p>
+            <h1>Josiah Willard <i>Gibbs</i></h1>
+            <p class="subtitle">Bapak Analisis Vektor Modern (1839 - 1903)</p>
+            
+            <div class="bio">
+                <p>Josiah Willard Gibbs adalah seorang ilmuwan, fisikawan, dan matematikawan Amerika yang menyederhanakan perhitungan matematika spasial. Sebelum Gibbs, para ilmuwan menggunakan sistem *quaternion* yang rumit. Gibbs memecahnya menjadi komponen <strong>Dot Product</strong> dan <strong>Cross Product</strong> yang jauh lebih aplikatif untuk dunia *engineering* dan fisika modern.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="calculate" class="section-container">
+        <h2 class="section-title">Visualisasi <i>Kalkulasi</i></h2>
+        
+        <div class="calc-wrapper">
+            <div class="inputs">
+                <label style="margin-bottom: 20px; display: block;">
+                    Mode Dimensi:
+                    <select id="dimension" onchange="toggleDimension(); calculateAndDraw();">
+                        <option value="2d">2D (Ruang XY)</option>
+                        <option value="3d">3D (Ruang XYZ)</option>
+                    </select>
+                </label>
+
+                <h3 class="serif" style="color: #ff9999; margin-bottom: 5px;">Vektor A (Merah)</h3>
+                <div class="input-group">
+                    <label>X: <input type="number" id="ax" value="4"></label>
+                    <label>Y: <input type="number" id="ay" value="3"></label>
+                    <label class="z-input" style="display: none;">Z: <input type="number" id="az" value="5"></label>
+                </div>
+
+                <h3 class="serif" style="color: #99ccff; margin-bottom: 5px; margin-top: 20px;">Vektor B (Biru)</h3>
+                <div class="input-group">
+                    <label>X: <input type="number" id="bx" value="5"></label>
+                    <label>Y: <input type="number" id="by" value="-2"></label>
+                    <label class="z-input" style="display: none;">Z: <input type="number" id="bz" value="2"></label>
+                </div>
+
+                <button onclick="calculateAndDraw()">Kalkulasi Dot Produk</button>
+                
+                <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                    <p style="font-size: 12px; letter-spacing: 2px;">NILAI HASIL</p>
+                    <h3 id="result-text" style="font-size: 2rem; margin-top: 5px;">-</h3>
+                </div>
+            </div>
+            
+            <div class="visualization">
+                <div class="canvas-controls">
+                    <button onclick="zoomCanvas(5)">+</button>
+                    <button onclick="zoomCanvas(-5)">-</button>
+                </div>
+                <div id="canvas-hint" class="canvas-hint">Scroll: Zoom</div>
+                <canvas id="vectorCanvas" width="500" height="500"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section id="history" class="section-container" style="background-color: #d12e16;">
+        <h2 class="section-title">Riwayat <i>Perhitungan</i></h2>
+        <div id="history-container">
+            <p id="empty-history" style="font-family: 'Inter', sans-serif; font-style: normal;">Belum ada jejak kalkulasi.</p>
+        </div>
+    </section>
+
+    <section id="about" class="section-container">
+        <h2 class="section-title">Profil <i>Kreator</i></h2>
+        <div class="about-content">
+            <p>Proyek visualisasi matematika ini dirancang dan dikembangkan oleh <strong>Uzi</strong>, seorang mahasiswa teknik. Lahir di Ciamis pada [Isi Tanggal Lahir], Uzi memiliki ketertarikan mendalam dalam menerjemahkan logika matematis yang abstrak menjadi bentuk antarmuka visual yang interaktif dan mudah dipahami.</p>
+            <p>Berangkat dari kebutuhan akademis untuk memahami ruang vektor 2D dan 3D, situs ini dibangun tanpa menggunakan *library* grafis eksternal, melainkan memanfaatkan pemrosesan matriks murni via JavaScript.</p>
+            <p style="margin-top: 40px; font-size: 0.9rem; letter-spacing: 1px;">
+                TERHUBUNG: <br>
+                IG: @[Username_IG] &nbsp; | &nbsp; TIKTOK: @[Username_TikTok]
+            </p>
+        </div>
+    </section>
+
+    <script>
+        // Mengatur tampilan input Z berdasarkan dimensi
+        function toggleDimension() {
+            const dim = document.getElementById('dimension').value;
+            const zInputs = document.querySelectorAll('.z-input');
+            zInputs.forEach(el => el.style.display = dim === '3d' ? 'block' : 'none');
+            document.getElementById('canvas-hint').innerText = dim === '3d' ? "Scroll: Zoom | Drag: Rotasi 3D" : "Scroll: Zoom";
+            
+            if (dim === '2d') { yaw = 0; pitch = 0; } 
+            else { yaw = Math.PI / 4; pitch = Math.PI / 6; }
+        }
+
+        const canvas = document.getElementById('vectorCanvas');
+        const ctx = canvas.getContext('2d');
+        const historyContainer = document.getElementById('history-container');
+
+        // Variabel Navigasi Kanvas
+        let scale = 25; 
+        let yaw = 0;   
+        let pitch = 0; 
+        let isDragging = false;
+        let lastX, lastY;
+
+        // --- EVENT LISENERS UNTUK MOUSE ---
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            scale += e.deltaY > 0 ? -2 : 2;
+            if(scale < 5) scale = 5;    
+            if(scale > 100) scale = 100;  
+            calculateAndDraw();
+        });
+
+        function zoomCanvas(amount) {
+            scale += amount;
+            if(scale < 5) scale = 5;
+            if(scale > 100) scale = 100;
+            calculateAndDraw();
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (document.getElementById('dimension').value === '3d') {
+                isDragging = true;
+                lastX = e.offsetX;
+                lastY = e.offsetY;
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging && document.getElementById('dimension').value === '3d') {
+                let dx = e.offsetX - lastX;
+                let dy = e.offsetY - lastY;
+                yaw += dx * 0.01;
+                pitch -= dy * 0.01;
+                lastX = e.offsetX;
+                lastY = e.offsetY;
+                calculateAndDraw();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => isDragging = false);
+        canvas.addEventListener('mouseleave', () => isDragging = false);
+
+        // --- PROYEKSI MATEMATIKA ---
+        function project(x, y, z) {
+            const is3D = document.getElementById('dimension').value === '3d';
+            if (!is3D) {
+                return { x: canvas.width / 2 + x * scale, y: canvas.height / 2 - y * scale };
+            }
+            
+            let y1 = y * Math.cos(pitch) - z * Math.sin(pitch);
+            let z1 = y * Math.sin(pitch) + z * Math.cos(pitch);
+            let x2 = x * Math.cos(yaw) + z1 * Math.sin(yaw);
+            let z2 = -x * Math.sin(yaw) + z1 * Math.cos(yaw);
+            
+            return {
+                x: canvas.width / 2 + x2 * scale,
+                y: canvas.height / 2 - y1 * scale
+            };
+        }
+
+        function drawLine3D(x1, y1, z1, x2, y2, z2, color, lineWidth, isDashed = false) {
+            const p1 = project(x1, y1, z1);
+            const p2 = project(x2, y2, z2);
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            if (isDashed) ctx.setLineDash([4, 4]); else ctx.setLineDash([]);
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawText3D(text, x, y, z, color) {
+            const p = project(x, y, z);
+            ctx.fillStyle = color;
+            ctx.font = '10px Inter';
+            ctx.fillText(text, p.x + 5, p.y + 5);
+        }
+
+        // --- GAMBAR GRID KANVAS ---
+        function drawAxes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const is3D = document.getElementById('dimension').value === '3d';
+
+            // Sumbu diwarnai sedikit lebih terang karena latar gelap
+            drawLine3D(-20, 0, 0, 20, 0, 0, '#662222', 2); 
+            drawLine3D(0, -20, 0, 0, 20, 0, '#226622', 2); 
+            if (is3D) drawLine3D(0, 0, -20, 0, 0, 20, '#222266', 2); 
+
+            for(let i = -15; i <= 15; i++) {
+                if(i === 0) continue;
+                drawLine3D(i, -0.2, 0, i, 0.2, 0, '#666', 1);
+                drawText3D(i, i, -0.5, 0, '#888');
+                
+                drawLine3D(-0.2, i, 0, 0.2, i, 0, '#666', 1);
+                drawText3D(i, 0.5, i, 0, '#888');
+                
+                if (is3D) {
+                    drawLine3D(0, -0.2, i, 0, 0.2, i, '#666', 1);
+                    drawText3D(i, 0, -0.5, i, '#888');
+                }
+            }
+        }
+
+        // --- KALKULASI UTAMA ---
+        function calculateAndDraw() {
+            const dim = document.getElementById('dimension').value;
+            const ax = parseFloat(document.getElementById('ax').value) || 0;
+            const ay = parseFloat(document.getElementById('ay').value) || 0;
+            const bx = parseFloat(document.getElementById('bx').value) || 0;
+            const by = parseFloat(document.getElementById('by').value) || 0;
+            
+            let az = 0, bz = 0, dotProduct = 0, historyText = "";
+
+            if (dim === '3d') {
+                az = parseFloat(document.getElementById('az').value) || 0;
+                bz = parseFloat(document.getElementById('bz').value) || 0;
+                dotProduct = (ax * bx) + (ay * by) + (az * bz);
+                historyText = `[3D] Vektor A(${ax}, ${ay}, ${az}) · Vektor B(${bx}, ${by}, ${bz}) = ${dotProduct}`;
+            } else {
+                dotProduct = (ax * bx) + (ay * by);
+                historyText = `[2D] Vektor A(${ax}, ${ay}) · Vektor B(${bx}, ${by}) = ${dotProduct}`;
+            }
+
+            document.getElementById('result-text').innerText = dotProduct;
+
+            const emptyMsg = document.getElementById('empty-history');
+            if(emptyMsg) emptyMsg.remove();
+            
+            const lastHistoryEntry = historyContainer.lastElementChild?.innerText;
+            if (lastHistoryEntry !== historyText) {
+                const p = document.createElement('p');
+                p.innerText = historyText;
+                // Selipkan history terbaru di paling atas
+                historyContainer.insertBefore(p, historyContainer.firstChild); 
+            }
+
+            drawAxes();
+
+            // Garis proyeksi Vektor A
+            drawLine3D(ax, ay, az, ax, ay, 0, '#ff6b6b', 1, true); 
+            drawLine3D(ax, ay, 0, ax, 0, 0, '#ff6b6b', 1, true);   
+            drawLine3D(ax, ay, 0, 0, ay, 0, '#ff6b6b', 1, true);   
+            if(dim === '3d') drawLine3D(ax, ay, az, 0, 0, az, '#ff6b6b', 1, true); 
+
+            // Garis proyeksi Vektor B
+            drawLine3D(bx, by, bz, bx, by, 0, '#4facf7', 1, true);
+            drawLine3D(bx, by, 0, bx, 0, 0, '#4facf7', 1, true);
+            drawLine3D(bx, by, 0, 0, by, 0, '#4facf7', 1, true);
+            if(dim === '3d') drawLine3D(bx, by, bz, 0, 0, bz, '#4facf7', 1, true);
+
+            // Garis Vektor Utama (Warna lebih terang)
+            drawLine3D(0, 0, 0, ax, ay, az, '#ff4d4d', 3); 
+            drawLine3D(0, 0, 0, bx, by, bz, '#3399ff', 3); 
+        }
+
+        // Inisialisasi Pertama
+        toggleDimension();
+        calculateAndDraw();
+    </script>
+</body>
+</html>

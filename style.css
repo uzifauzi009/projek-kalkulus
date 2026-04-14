@@ -1,0 +1,129 @@
+:root {
+    --bg-red: #ea361a; 
+    --text-white: #f5f5f5;
+    --text-black: #111;
+    --border-color: rgba(255, 255, 255, 0.4);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: var(--bg-red); 
+    color: var(--text-white); 
+    line-height: 1.6; 
+    overflow-x: hidden;
+}
+
+h1, h2, h3, .serif { font-family: 'Playfair Display', serif; font-weight: 400; }
+
+nav {
+    position: fixed;
+    top: 20px; right: 40px;
+    z-index: 100;
+}
+.nav-links { list-style: none; display: flex; gap: 30px; }
+.nav-links li a { 
+    color: var(--text-white); 
+    text-decoration: none; 
+    font-size: 14px; 
+    letter-spacing: 2px; 
+    text-transform: uppercase;
+    font-weight: 600;
+}
+.nav-links li a:hover { opacity: 0.7; }
+
+#home {
+    display: flex;
+    height: 100vh;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.hero-image {
+    flex: 1;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/2/23/Josiah_Willard_Gibbs_-from_MMS-.jpg') center top/cover no-repeat;
+    border-right: 1px solid var(--border-color);
+    filter: contrast(1.1) grayscale(20%);
+}
+
+.hero-text {
+    flex: 1;
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.hero-text h1 { font-size: 5rem; line-height: 1.1; margin-bottom: 20px; letter-spacing: -1px; }
+.hero-text h1 i { font-style: italic; }
+.hero-text .subtitle { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9; }
+.hero-text .bio { 
+    font-size: 0.95rem; 
+    border-top: 1px solid var(--border-color); 
+    padding-top: 20px; 
+    max-width: 80%;
+}
+
+.section-container {
+    padding: 100px 60px;
+    border-bottom: 1px solid var(--border-color);
+}
+.section-title { font-size: 3.5rem; margin-bottom: 40px; }
+
+.calc-wrapper {
+    display: flex;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+.inputs { flex: 1; background: rgba(0,0,0,0.1); padding: 30px; border: 1px solid var(--border-color); }
+.input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.inputs label { font-size: 14px; letter-spacing: 1px; }
+.inputs input, .inputs select { 
+    padding: 10px; 
+    background: transparent; 
+    border: 1px solid var(--border-color); 
+    color: white; 
+    font-family: 'Inter', sans-serif;
+}
+.inputs button { 
+    padding: 15px; 
+    background: var(--text-white); 
+    color: var(--bg-red); 
+    border: none; 
+    cursor: pointer; 
+    font-weight: bold; 
+    letter-spacing: 1px; 
+    width: 100%;
+    margin-top: 10px;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+}
+.inputs button:hover { background: #111; color: white; }
+
+.visualization { 
+    flex: 1.5; 
+    position: relative; 
+    border: 1px solid var(--border-color); 
+    background-color: #111; 
+    display: flex; justify-content: center; align-items: center;
+}
+canvas { cursor: grab; }
+canvas:active { cursor: grabbing; }
+.canvas-controls { position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; gap: 5px; z-index: 10; }
+.canvas-controls button { 
+    width: 35px; height: 35px; background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border-color); cursor: pointer; font-size: 18px; 
+}
+.canvas-controls button:hover { background: white; color: black; }
+.canvas-hint { position: absolute; bottom: 15px; left: 15px; color: rgba(255,255,255,0.5); font-size: 11px; z-index: 10; pointer-events: none; letter-spacing: 1px; text-transform: uppercase; }
+
+#history-container p { 
+    padding: 15px 0; 
+    border-bottom: 1px dashed var(--border-color); 
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
+.about-content { max-width: 700px; font-size: 1.1rem; }
+.about-content p { margin-bottom: 20px; }
